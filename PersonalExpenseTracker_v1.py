@@ -1,3 +1,5 @@
+import os
+
 def log_expense():
     amount = input("Amount: ")
     category = input("Category: ")
@@ -21,8 +23,13 @@ def view_summary():
 def view_breakdown():
     ...
 
-def set_budget():
-    ...
+def set_monthly_budget():
+    new_budget = input("Monthly Budget: ")
+
+    with open("budget.txt", "w") as file:
+        file.write(new_budget)
+
+    # set new budget
 
 def menu():
     print("Log Expense (1)\nView Summary (2)\nView Breakdown (3)\nSet Budget (4)")
@@ -31,6 +38,12 @@ def menu():
     return action
 
 def main():
+    if not os.path.exists("budget.txt") or os.path.getsize("budget.txt") == 0:
+        with open("budget.txt", "w") as file:
+            file.write("500")
+
+    # set default budget on first program run
+
     while True:
         action = menu()
 
@@ -44,7 +57,7 @@ def main():
             view_breakdown()
 
         elif action == "4":
-            set_budget()
+            set_monthly_budget()
     
         else:
             exit()
