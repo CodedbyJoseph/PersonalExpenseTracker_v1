@@ -47,16 +47,46 @@ def view_summary(expenses):
     remaining = float(budget) - total_spent
     print(f"Remaining this month: {remaining}")
 
-
-
-
 def view_breakdown(expenses):
-    ...
+    year = datetime.now().year
+    month = datetime.now().strftime("%B")
+
+    category_totals = {}
+    for expense in expenses:
+        if expense["year"] == year and expense["month"] == month:
+            cat = expense["category"]
+            category_totals[cat] = category_totals.get(cat, 0) + float(expense["amount"])
+
+# use .get() so program does not crash when adding expense with no prior expense in category
+
+    max_val = max(category_totals.values())
+
+# determine most prominent category's amount for formatting chart
+
+    max_label = 0
+
+    for expense in expenses:
+        if len(expense["category"]) > max_label:
+            max_label = len(expense["category"])
+
+# determine char length of longest category for formatting chart
+
+    print()
+
+    for category, amount in category_totals.items():
+        bar_length = int(amount / max_val * 40)   # each length based on max amount
+        bar = '\u2588' * bar_length
+        print(f"{category:>{max_label}} | {bar} {amount}")    # right aligned based
+        print()
+
+# display the bar chart
 
 
 
 
-optimize finding the total expenses of current month
+
+
+# optimize finding the total expenses of current month
 
 def remove_expense(expenses):
     ...
