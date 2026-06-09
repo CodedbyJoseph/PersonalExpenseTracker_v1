@@ -56,7 +56,7 @@ def view_breakdown(expenses):
 
 
 
-
+optimize finding the total expenses of current month
 
 def remove_expense(expenses):
     ...
@@ -81,24 +81,27 @@ def menu():
     
     return action
 
-def main():
+def default_budget():
     if not os.path.exists("budget.txt") or os.path.getsize("budget.txt") == 0:
         with open("budget.txt", "w") as file:
             file.write("500")
 
     # set default budget if budget does not exist
 
+def main():
+    default_budget()
+
     if os.path.exists("data.json"):
         with open("data.json", "r") as file:
             expenses = json.load(file)
 
     # store all expenses as a list of dicts to access them in code
-    # the loaded variable is constantly up to date
+    # the list can be modified in place in other functions if it is passed as a parameter)
 
     else:
         expenses = []
 
-    # create empty list of expenses on first program run
+    # create empty list of expenses if expenses does not exist
 
     while True:
         year = datetime.now().year
