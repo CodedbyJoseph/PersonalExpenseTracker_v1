@@ -24,7 +24,7 @@ def log_expense(expenses):
 
     # log/store new expense
 
-def view_summary(expenses, budget):
+def view_summary(expenses):
     # view summary of the current calendar month
 
     year = datetime.now().year
@@ -44,7 +44,7 @@ def view_summary(expenses, budget):
 
     print(f"Budget: {budget}")
 
-    remaining = total_spent - budget
+    remaining = int(budget) - total_spent
     print(f"Remaining this month: {remaining}")
 
 
@@ -107,7 +107,7 @@ def main():
             log_expense(expenses)
         
         elif action == "2":
-            view_summary(expenses, budget)
+            view_summary(expenses)
 
         elif action == "3":
             view_breakdown(expenses)

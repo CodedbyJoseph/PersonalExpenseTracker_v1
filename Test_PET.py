@@ -1,6 +1,6 @@
 import pytest
 import json
-from PersonalExpenseTracker_v1 import log_expense
+from PersonalExpenseTracker_v1 import log_expense, view_summary
 
 def test_log_expense(monkeypatch, tmp_path):
     # simulate user typing "20", "Food", "lunch" when input() is called
@@ -26,3 +26,19 @@ def test_log_expense(monkeypatch, tmp_path):
     assert data[0]["category"] == "Food"
     assert data[0]["amount"] == "20"
     assert data[0]["description"] == "lunch"
+
+
+def test_view_summary(capsys, monkeypatch):
+    expenses = [
+        {"year": 2026, "month": "June", "category": "Food", "amount": "15"},
+        {"year": 2026, "month": "June", "category": "Transportation", "amount": "5"},
+    ]
+
+    monkeypatch.setattr("builtins.open", lambda *args, **kwargs: __import__("io").StringIO("500"))
+
+    view_summary(expenses)
+
+    captured = capsys.readouterr()
+    assert "Spent: 20" in captured.out
+    assert "Budget: 500" in captured.out
+    assert "Remaining this month: 480" in captured.out
