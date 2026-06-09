@@ -24,11 +24,6 @@ def log_expense(expenses):
 
     # log/store new expense
 
-
-
-
-
-
 def view_summary(expenses, budget):
     # view summary of the current calendar month
 
@@ -49,11 +44,8 @@ def view_summary(expenses, budget):
 
     print(f"Budget: {budget}")
 
-
-    print(f"Remaining:")
-
-
-
+    remaining = total_spent - budget
+    print(f"Remaining this month: {remaining}")
 
 
 

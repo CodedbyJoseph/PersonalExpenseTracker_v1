@@ -1,4 +1,5 @@
 How to use program:
+- CLI based
 - download PersonalExpenseTracker
 - run in desired IDE
 
