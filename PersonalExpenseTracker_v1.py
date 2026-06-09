@@ -35,7 +35,7 @@ def view_summary(expenses):
     total_spent = 0
     for expense in expenses:
         if expense["year"] == year and expense["month"] == month:
-            total_spent += int(expense["amount"])
+            total_spent += float(expense["amount"])
     
     print(f"Spent: {total_spent}")
 
@@ -44,7 +44,7 @@ def view_summary(expenses):
 
     print(f"Budget: {budget}")
 
-    remaining = int(budget) - total_spent
+    remaining = float(budget) - total_spent
     print(f"Remaining this month: {remaining}")
 
 
@@ -86,7 +86,7 @@ def main():
         with open("budget.txt", "w") as file:
             file.write("500")
 
-    # set default budget on first program run
+    # set default budget if budget does not exist
 
     if os.path.exists("data.json"):
         with open("data.json", "r") as file:
@@ -101,6 +101,24 @@ def main():
     # create empty list of expenses on first program run
 
     while True:
+        year = datetime.now().year
+        month = datetime.now().strftime("%B")
+
+        total_spent = 0
+        for expense in expenses:
+            if expense["year"] == year and expense["month"] == month:
+                total_spent += float(expense["amount"])
+        
+        with open("budget.txt", "r") as file:
+            budget = file.read()
+        
+        remaining = float(budget) - total_spent
+
+        if remaining <= float(budget) * 0.2:
+            print(f"Be careful. Budget remaining: {remaining}")
+
+    # remind user when nearing budget limit on every menu start
+
         action = menu()
 
         if action == "1":
@@ -116,7 +134,6 @@ def main():
             set_monthly_budget()
     
         else:
-            print(expenses)
             exit()
 
 if __name__ == "__main__":
