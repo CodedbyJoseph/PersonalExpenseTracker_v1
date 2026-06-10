@@ -2,6 +2,21 @@ import os
 import json
 from datetime import datetime
 
+def current_total_spent(expenses):
+    year = datetime.now().year
+    month = datetime.now().strftime("%B")
+
+    # total_spent = 0
+    # for expense in expenses:
+    #     if expense["year"] == year and expense["month"] == month:
+    #         total_spent += float(expense["amount"])
+
+    total_spent = sum(
+        float(expense["amount"]) for expense in expenses if expense["year"] == year and expense["month"] == month
+        )
+
+    return total_spent
+
 def log_expense(expenses):
     year = datetime.now().year
     month = datetime.now().strftime("%B")
@@ -27,15 +42,11 @@ def log_expense(expenses):
 def view_summary(expenses):
     # view summary of the current calendar month
 
-    year = datetime.now().year
     month = datetime.now().strftime("%B")
 
     print(f"Month: {month}")
 
-    total_spent = 0
-    for expense in expenses:
-        if expense["year"] == year and expense["month"] == month:
-            total_spent += float(expense["amount"])
+    total_spent = current_total_spent(expenses)
     
     print(f"Spent: {total_spent}")
 
@@ -63,15 +74,22 @@ def view_breakdown(expenses):
 
 # determine most prominent category's amount for formatting chart
 
-    max_label = 0
+    # max_label = 0
 
-    for expense in expenses:
-        if len(expense["category"]) > max_label:
-            max_label = len(expense["category"])
+    # for expense in expenses:
+    #     if len(expense["category"]) > max_label:
+    #         max_label = len(expense["category"])
+
+    max_label = max(len(expense["category"]) for expense in expenses)
 
 # determine char length of longest category for formatting chart
 
     print()
+
+    title = f"{month} {year} Breakdown"
+    print(f"\n{title}")
+
+    print(f"{'\u2500' * len(title)}")
 
     for category, amount in category_totals.items():
         bar_length = int(amount / max_val * 40)   # each length based on max amount
@@ -80,13 +98,6 @@ def view_breakdown(expenses):
         print()
 
 # display the bar chart
-
-
-
-
-
-
-# optimize finding the total expenses of current month
 
 def remove_expense(expenses):
     ...
@@ -134,13 +145,7 @@ def main():
     # create empty list of expenses if expenses does not exist
 
     while True:
-        year = datetime.now().year
-        month = datetime.now().strftime("%B")
-
-        total_spent = 0
-        for expense in expenses:
-            if expense["year"] == year and expense["month"] == month:
-                total_spent += float(expense["amount"])
+        total_spent = current_total_spent(expenses)
         
         with open("budget.txt", "r") as file:
             budget = file.read()
@@ -171,3 +176,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# manage errors, do not allow non number amounts, etc
