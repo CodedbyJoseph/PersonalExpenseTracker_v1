@@ -100,9 +100,31 @@ def view_breakdown(expenses):
 # display the bar chart
 
 def remove_expense(expenses):
-    ...
+    for index, expense in enumerate(expenses):
+        print(index+1, expense)
+
+    # display entry list
+
+    remove = input("Remove Entry: ")
+
+    expenses.pop(int(remove)-1)
+
+    with open("data.json", "w") as file:
+        json.dump(expenses, file)
+
+    for index, expense in enumerate(expenses):
+        print(index+1, expense)
+    
+    # update entry list
+
+    # display updated entry list
 
 
+
+
+# make it specific to only display entries in this month
+# enumerate thru all current entries and remove that one from the expenses history
+# implement error handling for removing index when list is empty
 
 
 
@@ -117,7 +139,7 @@ def set_monthly_budget():
     # set new budget
 
 def menu():
-    print("Log Expense (1)\nView Summary (2)\nView Breakdown (3)\nSet Budget (4)")
+    print("Log Expense (1)\nView Summary (2)\nView Breakdown (3)\nRemove Expense (4)\nSet Budget (5)")
     action = input("Action: ")
     
     return action
@@ -128,6 +150,12 @@ def default_budget():
             file.write("500")
 
     # set default budget if budget does not exist
+
+def all_expenses(expenses):
+    # show all expenses history
+
+    for index, expense in enumerate(expenses):
+        print(index+1, expense)
 
 def main():
     default_budget()
@@ -169,6 +197,9 @@ def main():
             view_breakdown(expenses)
 
         elif action == "4":
+            remove_expense(expenses)
+        
+        elif action == "5":
             set_monthly_budget()
     
         else:
@@ -177,4 +208,12 @@ def main():
 if __name__ == "__main__":
     main()
 
+
+
+
+
 # manage errors, do not allow non number amounts, etc
+# add comments to what is being asserted in unit tests
+
+
+
