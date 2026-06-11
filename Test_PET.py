@@ -82,7 +82,7 @@ def test_breakdown(capsys):
     assert "40.0" in captured.out
     assert "50.0" not in captured.out
 
-def test_remove_expense(monkeypatch, tmp_path):
+def test_remove_expense(monkeypatch, tmp_path, capsys):
     year = datetime.now().year
     month = datetime.now().strftime("%B")
     prev_month = datetime(datetime.now().year, datetime.now().month - 1, 1).strftime("%B")
@@ -106,7 +106,28 @@ def test_remove_expense(monkeypatch, tmp_path):
         {"year": year, "month": prev_month, "category": "Food", "amount": "50"},
     ]
 
-    # this test asserts that the correct entry is removed
+    captured = capsys.readouterr()
+
+    before_current = [
+        {"year": year, "month": month, "category": "Food", "amount": "60"},
+        {"year": year, "month": month, "category": "Transport", "amount": "40"},
+    ]
+    for index, expense in enumerate(before_current):
+        assert f"{index+1} {expense}" in captured.out
+
+    expected_current = [
+        {"year": year, "month": month, "category": "Food", "amount": "60"},
+    ]
+    for index, expense in enumerate(expected_current):
+        assert f"{index+1} {expense}" in captured.out
+
+    with real_open(temp_file, "r") as file:
+        data = json.load(file)
+
+    assert data == expenses
+
+    # this test asserts that original and then current expenses are printed
+    # correct expense is removed from expenses
     # we use a dummy expenses list as to not alter real user data within the json
 
 

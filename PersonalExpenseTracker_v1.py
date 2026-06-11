@@ -100,30 +100,37 @@ def view_breakdown(expenses):
 # display the bar chart
 
 def remove_expense(expenses):
-    for index, expense in enumerate(expenses):
+    year = datetime.now().year
+    month = datetime.now().strftime("%B")
+
+    current_expenses = [expense for expense in expenses if expense["month"] == month and expense["year"] == year]
+
+    for index, expense in enumerate(current_expenses):
         print(index+1, expense)
 
-    # display entry list
+    # display entry list of current month
 
     remove = input("Remove Entry: ")
 
-    expenses.pop(int(remove)-1)
+    removed = current_expenses.pop(int(remove)-1)
+
+    # remove entry from current expenses
+
+    expenses.remove(removed)
+
+    # remove entry from expenses
 
     with open("data.json", "w") as file:
         json.dump(expenses, file)
 
-    for index, expense in enumerate(expenses):
+        # update expense list
+
+    for index, expense in enumerate(current_expenses):
         print(index+1, expense)
     
-    # update entry list
-
-    # display updated entry list
+    # display updated current expenses
 
 
-
-
-# make it specific to only display entries in this month
-# enumerate thru all current entries and remove that one from the expenses history
 # implement error handling for removing index when list is empty
 
 
