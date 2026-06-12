@@ -22,6 +22,16 @@ def log_expense(expenses):
     month = datetime.now().strftime("%B")
 
     amount = input("Amount: ")
+
+    try:
+        float(amount)
+    
+    except ValueError:
+        print("Invalid amount. Expense not logged.")
+        return
+    
+    # non-numbers will cause no expense to log
+    
     category = input("Category: ")
     description = input("Desc (\"no\" for none): ")
 
@@ -44,6 +54,8 @@ def view_summary(expenses):
 
     month = datetime.now().strftime("%B")
 
+    print()
+
     print(f"Month: {month}")
 
     total_spent = current_total_spent(expenses)
@@ -58,6 +70,8 @@ def view_summary(expenses):
     remaining = float(budget) - total_spent
     print(f"Remaining this month: {remaining}")
 
+    print()
+
 def view_breakdown(expenses):
     year = datetime.now().year
     month = datetime.now().strftime("%B")
@@ -69,6 +83,13 @@ def view_breakdown(expenses):
             category_totals[cat] = category_totals.get(cat, 0) + float(expense["amount"])
 
 # use .get() so program does not crash when adding expense with no prior expense in category
+# dict of categories and their total amounts
+
+    if category_totals == {}:
+        print("\nNo current expenses. Cannot show breakdown.\n")
+        return
+
+# error handling: if no current expenses, no breakdown shown
 
     max_val = max(category_totals.values())
 
@@ -103,16 +124,40 @@ def remove_expense(expenses):
     year = datetime.now().year
     month = datetime.now().strftime("%B")
 
+    print()
+
     current_expenses = [expense for expense in expenses if expense["month"] == month and expense["year"] == year]
+
+    if current_expenses == []:
+        print("\nNo expenses exist in current period.\n")
+        return
+    
+    # handle error of removing expense when there are no current expenses
 
     for index, expense in enumerate(current_expenses):
         print(index+1, expense)
 
     # display entry list of current month
 
+    print()
+
     remove = input("Remove Entry: ")
 
-    removed = current_expenses.pop(int(remove)-1)
+    try:
+        remove = int(remove)
+
+    
+    except ValueError:
+        print("\nInvalid index. No expense removed.\n")
+        return
+    
+    if remove > index+1 or remove < 1:
+        print("\nInvalid index. No expense removed.\n")
+        return
+
+    # handle errors for nonexistent indices
+
+    removed = current_expenses.pop(remove-1)
 
     # remove entry from current expenses
 
@@ -125,20 +170,26 @@ def remove_expense(expenses):
 
         # update expense list
 
+    print()
+
     for index, expense in enumerate(current_expenses):
         print(index+1, expense)
+
+    print()
     
     # display updated current expenses
 
-
-# implement error handling for removing index when list is empty
-
-
-
-
-
 def set_monthly_budget():
     new_budget = input("Monthly Budget: ")
+
+    try:
+        float(new_budget)
+
+    except ValueError:
+        print("\nInvalid budget.\n")
+        return
+    
+    # handle non-number inputs
 
     with open("budget.txt", "w") as file:
         file.write(new_budget)
@@ -214,13 +265,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-# manage errors, do not allow non number amounts, etc
-# add comments to what is being asserted in unit tests
-
-
-
