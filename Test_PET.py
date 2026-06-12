@@ -19,6 +19,8 @@ def test_current_spent():
 
     assert current_total_spent(expenses) == 100
 
+    # assert that the current expense total is correct based on mock expense list
+
 def test_log_expense(monkeypatch, tmp_path):
     # simulate user typing "20", "Food", "lunch" when input() is called
     inputs = iter(["20", "Food", "lunch"])
@@ -38,12 +40,13 @@ def test_log_expense(monkeypatch, tmp_path):
     with real_open(temp_file, "r") as file:
         data = json.load(file)
 
-    # check that exactly one expense was added with the correct values
     assert data[0]["year"] == datetime.now().year
     assert data[0]["month"] == datetime.now().strftime("%B")
     assert data[0]["category"] == "Food"
     assert data[0]["amount"] == "20"
     assert data[0]["description"] == "lunch"
+
+    # assert that exactly one expense was added, with the correct values, based on mock logged expense
 
 def test_view_summary(capsys, monkeypatch):
     expenses = [
@@ -59,6 +62,8 @@ def test_view_summary(capsys, monkeypatch):
     assert "Spent: 20" in captured.out
     assert "Budget: 500" in captured.out
     assert "Remaining this month: 480.0" in captured.out
+
+    # assert summary displays correct amount spent, budget, and remaining for current period based on mock expenses
 
 def test_breakdown(capsys):
     year = datetime.now().year
@@ -81,6 +86,8 @@ def test_breakdown(capsys):
     assert "70.0" in captured.out
     assert "40.0" in captured.out
     assert "50.0" not in captured.out
+
+    # assert that correct categories and their amounts are displayed for current period using mock expenses list
 
 def test_remove_expense(monkeypatch, tmp_path, capsys):
     year = datetime.now().year
@@ -130,57 +137,52 @@ def test_remove_expense(monkeypatch, tmp_path, capsys):
     # correct expense is removed from expenses
     # we use a dummy expenses list as to not alter real user data within the json
 
-
 def test_main_budget_warning(capsys, monkeypatch):
-    # 4 expenses totalling 450, leaving only 50 of 500 budget (10%, under 20% threshold)
+    # mock expenses totalling 350 out of 400 budget, leaving less than 20% left
     expenses = [
         {"year": 2026, "month": "June", "category": "Food", "amount": "100"},
         {"year": 2026, "month": "June", "category": "Transport", "amount": "150"},
-        {"year": 2026, "month": "June", "category": "Shopping", "amount": "100"},
-        {"year": 2026, "month": "June", "category": "Bills", "amount": "100"},
+        {"year": 2026, "month": "June", "category": "Shopping", "amount": "50"},
+        {"year": 2026, "month": "June", "category": "Bills", "amount": "50"},
     ]
 
-    # both files appear to exist so main skips creating defaults
+    # makes os.path.exists return True for all files so the json appears to exist and calls open()
     monkeypatch.setattr("os.path.exists", lambda path: True)
-    monkeypatch.setattr("os.path.getsize", lambda path: 3)
 
-    # return the expenses list for data.json and "500" for budget.txt
-    def fake_open(filename, *args, **kwargs):
-        if "data.json" in str(filename):
-            return io.StringIO(json.dumps(expenses))
-        return io.StringIO("500")
+    # redirect all open() calls to read a fake file containing int 400 and return it
+    # this is the budget I will set for this test
+    monkeypatch.setattr("builtins.open", lambda *args, **kwargs: io.StringIO("400"))
 
-    monkeypatch.setattr("builtins.open", fake_open)
+    # redirect json.load to return mock expenses instead of mock json file contents (400)
+    monkeypatch.setattr("json.load", lambda file: expenses)
 
-    # any input triggers the else branch which calls exit()
+    # make input() return invalid number to cause exit() which ends main()
     monkeypatch.setattr("builtins.input", lambda _: "q")
 
-    # exit() raises SystemExit, catch it so the test doesn't crash
+    # while expecting a SystemExit, call main()
     with pytest.raises(SystemExit):
         main()
 
     captured = capsys.readouterr()
     assert "Be careful. Budget remaining: 50.0" in captured.out
 
+    # assert that warning message is displayed due to <= 20% budget left
 
 def test_main_no_budget_warning(capsys, monkeypatch):
-    # 4 expenses totalling 399, leaving 101 of 500 budget (over 20% threshold, no warning)
+    # mock expenses totalling 300 out of 400 budget, leaving more than 20% left
     expenses = [
-        {"year": 2026, "month": "June", "category": "Food", "amount": "100"},
+        {"year": 2026, "month": "June", "category": "Food", "amount": "50"},
         {"year": 2026, "month": "June", "category": "Transport", "amount": "150"},
-        {"year": 2026, "month": "June", "category": "Shopping", "amount": "100"},
-        {"year": 2026, "month": "June", "category": "Bills", "amount": "49"},
+        {"year": 2026, "month": "June", "category": "Shopping", "amount": "50"},
+        {"year": 2026, "month": "June", "category": "Bills", "amount": "50"},
     ]
 
     monkeypatch.setattr("os.path.exists", lambda path: True)
-    monkeypatch.setattr("os.path.getsize", lambda path: 3)
 
-    def fake_open(filename, *args, **kwargs):
-        if "data.json" in str(filename):
-            return io.StringIO(json.dumps(expenses))
-        return io.StringIO("500")
+    monkeypatch.setattr("builtins.open", lambda *args, **kwargs: io.StringIO("400"))
 
-    monkeypatch.setattr("builtins.open", fake_open)
+    monkeypatch.setattr("json.load", lambda file: expenses)
+
     monkeypatch.setattr("builtins.input", lambda _: "q")
 
     with pytest.raises(SystemExit):
@@ -188,3 +190,5 @@ def test_main_no_budget_warning(capsys, monkeypatch):
 
     captured = capsys.readouterr()
     assert "Be careful" not in captured.out
+
+    # assert that warning message is not displayed
