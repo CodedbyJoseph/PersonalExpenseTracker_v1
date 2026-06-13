@@ -17,6 +17,7 @@ def current_total_spent(expenses):
 
     return total_spent
 
+
 def log_expense(expenses):
     year = datetime.now().year
     month = datetime.now().strftime("%B")
@@ -49,6 +50,7 @@ def log_expense(expenses):
 
     # log/store new expense
 
+
 def view_summary(expenses):
     # view summary of the current calendar month
 
@@ -71,6 +73,7 @@ def view_summary(expenses):
     print(f"Remaining this month: {remaining}")
 
     print()
+
 
 def view_breakdown(expenses):
     year = datetime.now().year
@@ -119,6 +122,7 @@ def view_breakdown(expenses):
         print()
 
 # display the bar chart
+
 
 def remove_expense(expenses):
     year = datetime.now().year
@@ -179,6 +183,7 @@ def remove_expense(expenses):
     
     # display updated current expenses
 
+
 def set_monthly_budget():
     new_budget = input("Monthly Budget: ")
 
@@ -196,11 +201,13 @@ def set_monthly_budget():
 
     # set new budget
 
+
 def menu():
     print("Log Expense (1)\nView Summary (2)\nView Breakdown (3)\nRemove Expense (4)\nSet Budget (5)")
     action = input("Action: ")
     
     return action
+
 
 def default_budget():
     if not os.path.exists("budget.txt") or os.path.getsize("budget.txt") == 0:
@@ -209,11 +216,13 @@ def default_budget():
 
     # set default budget if budget does not exist
 
+
 def all_expenses(expenses):
     # show all expenses history
 
     for index, expense in enumerate(expenses):
         print(index+1, expense)
+
 
 def main():
     default_budget()

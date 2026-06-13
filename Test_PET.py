@@ -26,18 +26,21 @@ def test_log_expense(monkeypatch, tmp_path):
     inputs = iter(["20", "Food", "lunch"])
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
 
-    # create a temporary json file so the real data.json is not touched
-    temp_file = tmp_path / "data.json"
+    # create temporary path for temporary json file
+    temp_file_path = tmp_path / "data_fake.json"
+
+    # create variable to actually call open (open is needed on line 43)
     real_open = open
-    # redirect any open() call to use the temp file instead of data.json
-    monkeypatch.setattr("builtins.open", lambda *args, **kwargs: real_open(temp_file, "w"))
+
+    # redirect/override any open() call to use the temp file instead of data.json
+    monkeypatch.setattr("builtins.open", lambda *args, **kwargs: real_open(temp_file_path, "w"))
 
     # start with an empty expenses list and call the function
     expenses = []
     log_expense(expenses)
 
     # load the temp file back as a python list to check what was written
-    with real_open(temp_file, "r") as file:
+    with real_open(temp_file_path, "r") as file:
         data = json.load(file)
 
     assert data[0]["year"] == datetime.now().year
