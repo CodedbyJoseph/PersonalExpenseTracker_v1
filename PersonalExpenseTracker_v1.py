@@ -28,7 +28,7 @@ def log_expense(expenses):
         amount = float(amount)
     
     except ValueError:
-        print("Invalid amount. Expense not logged.")
+        print("\nInvalid amount. Expense not logged.\n")
         return
     
     # non-numbers will cause no expense to log
@@ -52,6 +52,8 @@ def log_expense(expenses):
         json.dump(expenses, file)
 
     # log/store new expense
+
+    print("\nExpense logged.\n")
 
 
 def view_summary(expenses):
@@ -177,7 +179,7 @@ def remove_expense(expenses):
 
         # update expense list
 
-    print()
+    print("\nExpense removed as reflected below.\n")
 
     for index, expense in enumerate(current_expenses):
         print(index+1, expense)
