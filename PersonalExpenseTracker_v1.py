@@ -190,7 +190,7 @@ def remove_expense(expenses):
 
 
 def set_monthly_budget():
-    new_budget = input("Monthly Budget: ")
+    new_budget = input("\nMonthly Budget: ")
 
     try:
         float(new_budget)
@@ -205,6 +205,8 @@ def set_monthly_budget():
         file.write(new_budget)
 
     # set new budget
+
+    print("\nBudget changed.\n")
 
 
 def menu():
