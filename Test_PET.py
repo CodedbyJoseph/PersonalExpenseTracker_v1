@@ -23,7 +23,7 @@ def test_current_spent():
 
 def test_log_expense(monkeypatch, tmp_path):
     # simulate user typing "20", "Food", "lunch" when input() is called
-    inputs = iter(["20", "Food", "lunch"])
+    inputs = iter(["20", "food", "lunch"])
     monkeypatch.setattr("builtins.input", lambda _: next(inputs))
 
     # create temporary path for temporary json file
@@ -46,7 +46,7 @@ def test_log_expense(monkeypatch, tmp_path):
     assert data[0]["year"] == datetime.now().year
     assert data[0]["month"] == datetime.now().strftime("%B")
     assert data[0]["category"] == "Food"
-    assert data[0]["amount"] == "20"
+    assert data[0]["amount"] == "20.00"
     assert data[0]["description"] == "lunch"
 
     # assert that exactly one expense was added, with the correct values, based on mock logged expense
@@ -62,9 +62,9 @@ def test_view_summary(capsys, monkeypatch):
     view_summary(expenses)
 
     captured = capsys.readouterr()
-    assert "Spent: 20" in captured.out
+    assert "Spent: 20.00" in captured.out
     assert "Budget: 500" in captured.out
-    assert "Remaining this month: 480.0" in captured.out
+    assert "Remaining this month: 480.00" in captured.out
 
     # assert summary displays correct amount spent, budget, and remaining for current period based on mock expenses
 
@@ -86,9 +86,9 @@ def test_breakdown(capsys):
     assert f"{month} {year} Breakdown" in captured.out
     assert "Food" in captured.out
     assert "Transport" in captured.out
-    assert "70.0" in captured.out
-    assert "40.0" in captured.out
-    assert "50.0" not in captured.out
+    assert "70.00" in captured.out
+    assert "40.00" in captured.out
+    assert "50.00" not in captured.out
 
     # assert that correct categories and their amounts are displayed for current period using mock expenses list
 
@@ -167,7 +167,7 @@ def test_main_budget_warning(capsys, monkeypatch):
         main()
 
     captured = capsys.readouterr()
-    assert "Be careful. Budget remaining: 50.0" in captured.out
+    assert "Be careful. Budget remaining: 50.00" in captured.out
 
     # assert that warning message is displayed due to <= 20% budget left
 

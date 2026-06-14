@@ -25,7 +25,7 @@ def log_expense(expenses):
     amount = input("Amount: ")
 
     try:
-        float(amount)
+        amount = float(amount)
     
     except ValueError:
         print("Invalid amount. Expense not logged.")
@@ -33,11 +33,14 @@ def log_expense(expenses):
     
     # non-numbers will cause no expense to log
     
-    category = input("Category: ")
+    category = input("Category: ").capitalize()
+
     description = input("Desc (\"no\" for none): ")
 
-    new_expense = {"year": year, "month": month, "category": category, "amount": amount}
+    new_expense = {"year": year, "month": month, "category": category, "amount": f"{amount:.2f}"}
     
+    # minor note to self: :.2f converts float/int into str with 2 dec
+
     if description != "no":
         new_expense["description"] = description
 
@@ -62,7 +65,7 @@ def view_summary(expenses):
 
     total_spent = current_total_spent(expenses)
     
-    print(f"Spent: {total_spent}")
+    print(f"Spent: {total_spent:.2f}")
 
     with open("budget.txt", "r") as file:
         budget = file.read()
@@ -70,7 +73,7 @@ def view_summary(expenses):
     print(f"Budget: {budget}")
 
     remaining = float(budget) - total_spent
-    print(f"Remaining this month: {remaining}")
+    print(f"Remaining this month: {remaining:.2f}")
 
     print()
 
@@ -118,7 +121,7 @@ def view_breakdown(expenses):
     for category, amount in category_totals.items():
         bar_length = int(amount / max_val * 40)   # each length based on max amount
         bar = '\u2588' * bar_length
-        print(f"{category:>{max_label}} | {bar} {amount}")    # right aligned based
+        print(f"{category:>{max_label}} | {bar} {amount:.2f}")    # right aligned based
         print()
 
 # display the bar chart
@@ -248,7 +251,7 @@ def main():
         remaining = float(budget) - total_spent
 
         if remaining <= float(budget) * 0.2:
-            print(f"Be careful. Budget remaining: {remaining}")
+            print(f"Be careful. Budget remaining: {remaining:.2f}")
 
     # remind user when nearing budget limit on every menu start
 
