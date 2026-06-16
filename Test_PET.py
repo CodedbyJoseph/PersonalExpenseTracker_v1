@@ -24,7 +24,7 @@ def test_current_spent():
 def test_log_expense(monkeypatch, tmp_path):
     # simulate user typing "20", "Food", "lunch" when input() is called
     inputs = iter(["20", "food", "lunch"])
-    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    monkeypatch.setattr("builtins.input", lambda input: next(inputs))
 
     # create temporary path for temporary json file
     temp_file_path = tmp_path / "data_fake.json"
@@ -32,8 +32,15 @@ def test_log_expense(monkeypatch, tmp_path):
     # create variable to actually call open (open is needed on line 43)
     real_open = open
 
-    # redirect/override any open() call to use the temp file instead of data.json
-    monkeypatch.setattr("builtins.open", lambda *args, **kwargs: real_open(temp_file_path, "w"))
+    # override any open() call to use the temp file instead of data.json
+
+    # def fake_open(path, mode):
+    #     return real_open(temp_file_path, "w")
+    # monkeypatch.setattr("builtins.open", fake_open)
+
+    monkeypatch.setattr("builtins.open", lambda path, mode: real_open(temp_file_path, "w"))
+
+    # NOTE: monkeypatch.setattr("builtins.open", real_open(temp_file_path, "w")) is wrong, 2nd argument returns None
 
     # start with an empty expenses list and call the function
     expenses = []
@@ -57,7 +64,7 @@ def test_view_summary(capsys, monkeypatch):
         {"year": 2026, "month": "June", "category": "Transportation", "amount": "5"},
     ]
 
-    monkeypatch.setattr("builtins.open", lambda *args, **kwargs: __import__("io").StringIO("500"))
+    monkeypatch.setattr("builtins.open", lambda path, mode: __import__("io").StringIO("500"))
 
     view_summary(expenses)
 
@@ -95,6 +102,7 @@ def test_breakdown(capsys):
 def test_remove_expense(monkeypatch, tmp_path, capsys):
     year = datetime.now().year
     month = datetime.now().strftime("%B")
+    # create datetime object and extract month as word
     prev_month = datetime(datetime.now().year, datetime.now().month - 1, 1).strftime("%B")
 
     expenses = [
@@ -103,11 +111,15 @@ def test_remove_expense(monkeypatch, tmp_path, capsys):
         {"year": year, "month": prev_month, "category": "Food", "amount": "50"},
     ]
 
-    monkeypatch.setattr("builtins.input", lambda _: "2")
+    # def fake_input(input):
+    #     return "2"
+    # monkeypatch.setattr("builtins.input", fake_input)
 
-    temp_file = tmp_path / "data.json"
+    monkeypatch.setattr("builtins.input", lambda input: "2")
+
+    temp_file_path = tmp_path / "data_fake.json"
     real_open = open
-    monkeypatch.setattr("builtins.open", lambda *args, **kwargs: real_open(temp_file, "w"))
+    monkeypatch.setattr("builtins.open", lambda path, mode: real_open(temp_file_path, "w"))
     
     remove_expense(expenses)
 
@@ -131,7 +143,7 @@ def test_remove_expense(monkeypatch, tmp_path, capsys):
     for index, expense in enumerate(expected_current):
         assert f"{index+1} {expense}" in captured.out
 
-    with real_open(temp_file, "r") as file:
+    with real_open(temp_file_path, "r") as file:
         data = json.load(file)
 
     assert data == expenses
@@ -154,13 +166,13 @@ def test_main_budget_warning(capsys, monkeypatch):
 
     # redirect all open() calls to read a fake file containing int 400 and return it
     # this is the budget I will set for this test
-    monkeypatch.setattr("builtins.open", lambda *args, **kwargs: io.StringIO("400"))
+    monkeypatch.setattr("builtins.open", lambda path, mode: io.StringIO("400"))
 
     # redirect json.load to return mock expenses instead of mock json file contents (400)
     monkeypatch.setattr("json.load", lambda file: expenses)
 
     # make input() return invalid number to cause exit() which ends main()
-    monkeypatch.setattr("builtins.input", lambda _: "q")
+    monkeypatch.setattr("builtins.input", lambda input: "q")
 
     # while expecting a SystemExit, call main()
     with pytest.raises(SystemExit):
@@ -182,11 +194,11 @@ def test_main_no_budget_warning(capsys, monkeypatch):
 
     monkeypatch.setattr("os.path.exists", lambda path: True)
 
-    monkeypatch.setattr("builtins.open", lambda *args, **kwargs: io.StringIO("400"))
+    monkeypatch.setattr("builtins.open", lambda path, mode: io.StringIO("400"))
 
     monkeypatch.setattr("json.load", lambda file: expenses)
 
-    monkeypatch.setattr("builtins.input", lambda _: "q")
+    monkeypatch.setattr("builtins.input", lambda input: "q")
 
     with pytest.raises(SystemExit):
         main()
