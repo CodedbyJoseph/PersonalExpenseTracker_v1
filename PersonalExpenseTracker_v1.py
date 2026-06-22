@@ -239,7 +239,7 @@ def main():
             expenses = json.load(file)
 
     # store all expenses as a list of dicts to access them in code
-    # the list can be modified in place in other functions if it is passed as a parameter)
+    # the list can be modified in place in other functions if it is passed as a parameter
 
     else:
         expenses = []
