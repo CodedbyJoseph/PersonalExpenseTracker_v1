@@ -2,26 +2,25 @@ import os
 import json
 from datetime import datetime
 
+YEAR = datetime.now().year
+MONTH = datetime.now().strftime("%B")
+
 def current_total_spent(expenses):
-    year = datetime.now().year
-    month = datetime.now().strftime("%B")
+    
 
     # total_spent = 0
     # for expense in expenses:
-    #     if expense["year"] == year and expense["month"] == month:
+    #     if expense["year"] == YEAR and expense["month"] == MONTH:
     #         total_spent += float(expense["amount"])
 
     total_spent = sum(
-        float(expense["amount"]) for expense in expenses if expense["year"] == year and expense["month"] == month
+        float(expense["amount"]) for expense in expenses if expense["year"] == YEAR and expense["month"] == MONTH
         )
 
     return total_spent
 
 
 def log_expense(expenses):
-    year = datetime.now().year
-    month = datetime.now().strftime("%B")
-
     amount = input("Amount: ")
 
     try:
@@ -37,7 +36,7 @@ def log_expense(expenses):
 
     description = input("Desc (\"no\" for none): ")
 
-    new_expense = {"year": year, "month": month, "category": category, "amount": f"{amount:.2f}"}
+    new_expense = {"year": YEAR, "month": MONTH, "category": category, "amount": f"{amount:.2f}"}
     
     # minor note to self: :.2f converts float/int into str with 2 dec
 
@@ -59,11 +58,9 @@ def log_expense(expenses):
 def view_summary(expenses):
     # view summary of the current calendar month
 
-    month = datetime.now().strftime("%B")
-
     print()
 
-    print(f"Month: {month}")
+    print(f"Month: {MONTH}")
 
     total_spent = current_total_spent(expenses)
     
@@ -81,12 +78,9 @@ def view_summary(expenses):
 
 
 def view_breakdown(expenses):
-    year = datetime.now().year
-    month = datetime.now().strftime("%B")
-
     category_totals = {}
     for expense in expenses:
-        if expense["year"] == year and expense["month"] == month:
+        if expense["year"] == YEAR and expense["month"] == MONTH:
             cat = expense["category"]
             category_totals[cat] = category_totals.get(cat, 0) + float(expense["amount"])
 
@@ -115,7 +109,7 @@ def view_breakdown(expenses):
 
     print()
 
-    title = f"{month} {year} Breakdown"
+    title = f"{MONTH} {YEAR} Breakdown"
     print(f"\n{title}")
 
     print(f"{'\u2500' * len(title)}")
@@ -130,12 +124,9 @@ def view_breakdown(expenses):
 
 
 def remove_expense(expenses):
-    year = datetime.now().year
-    month = datetime.now().strftime("%B")
-
     print()
 
-    current_expenses = [expense for expense in expenses if expense["month"] == month and expense["year"] == year]
+    current_expenses = [expense for expense in expenses if expense["month"] == MONTH and expense["year"] == YEAR]
 
     if current_expenses == []:
         print("\nNo expenses exist in current period.\n")
