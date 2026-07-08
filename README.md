@@ -1,6 +1,6 @@
 How to use program:
 - clone PersonalExpenseTracker_v1.py
-- run with python PersonalExpenseTracker_v1.py in the terminal or any IDE"
+- run with python PersonalExpenseTracker_v1.py in the terminal or any IDE
 
 Core features:
 - simple, CLI based day to day expense tracker
